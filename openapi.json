@@ -1,0 +1,1073 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "PodPitch",
+    "version": "1.0.0",
+    "description": "Connect PodPitch campaign reporting and media outreach data to your own tools. Bring your own PodPitch API key. An eligible PodPitch account is required; a free RapidAPI plan does not include a PodPitch subscription or outreach credits.",
+    "contact": {
+      "name": "PodPitch",
+      "url": "https://www.podpitch.com"
+    },
+    "x-website": "https://www.podpitch.com",
+    "x-category": "Business Software",
+    "license": {
+      "name": "MIT (API definition only)",
+      "url": "https://github.com/PodPitch/podpitch-cli/blob/main/LICENSE"
+    }
+  },
+  "servers": [
+    {
+      "url": "https://api.podpitch.com/api/v1",
+      "description": "PodPitch production public API"
+    }
+  ],
+  "externalDocs": {
+    "description": "PodPitch API keys and account documentation",
+    "url": "https://app.podpitch.com/settings/api"
+  },
+  "tags": [
+    {
+      "name": "Campaigns",
+      "description": "Campaign reporting and statistics."
+    },
+    {
+      "name": "Outreach records",
+      "description": "Individual media outreach records and pitch status."
+    },
+    {
+      "name": "Pitches and replies",
+      "description": "Read sent pitch and reply events with enabled integration access."
+    }
+  ],
+  "security": [
+    {
+      "PodPitchApiKey": []
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "PodPitchApiKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "Authorization",
+        "description": "Required. Enter Bearer followed by your own PodPitch API key, for example: Bearer pp_your_api_key_here. Never use another customer's key. RapidAPI credentials are separate and do not replace the PodPitch key."
+      }
+    }
+  },
+  "paths": {
+    "/campaigns": {
+      "get": {
+        "operationId": "listCampaigns",
+        "summary": "List campaigns",
+        "description": "List campaigns, profile information, and outreach statistics available to your API key.",
+        "tags": [
+          "Campaigns"
+        ],
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Campaign status.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Active",
+                "Manual",
+                "Off",
+                "Archived"
+              ]
+            }
+          },
+          {
+            "name": "profile",
+            "in": "query",
+            "required": false,
+            "description": "Partial profile name. A profile-restricted key retains its existing scope.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Fields respect team and profile access and account disclosure settings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "total_campaigns": {
+                      "type": "integer"
+                    },
+                    "campaigns": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid filter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or revoked PodPitch API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Integration access is not enabled for this account.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or outside the key profile scope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campaigns/{campaign_id}": {
+      "get": {
+        "operationId": "getCampaign",
+        "summary": "Get campaign details",
+        "description": "Get one campaign and its outreach statistics.",
+        "tags": [
+          "Campaigns"
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "description": "Campaign ID from List campaigns.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Fields respect team and profile access and account disclosure settings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "campaign": {
+                      "type": "object",
+                      "additionalProperties": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid filter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or revoked PodPitch API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Integration access is not enabled for this account.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or outside the key profile scope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campaigns/{campaign_id}/podcasts": {
+      "get": {
+        "operationId": "listCampaignRecords",
+        "summary": "List campaign outreach records",
+        "description": "Read outreach records, pitch status, timestamps, and disclosed contact details. The historical route and response array use the name podcasts, but support podcast, journalist, newsletter, person, and guest records. Use has_more, limit, and offset to paginate.",
+        "tags": [
+          "Outreach records"
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "description": "Campaign ID from List campaigns.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "description": "Pitch status.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "not_sent",
+                "in_progress",
+                "replied",
+                "paused",
+                "skipped",
+                "finished",
+                "booked",
+                "appeared",
+                "opened"
+              ]
+            }
+          },
+          {
+            "name": "type",
+            "in": "query",
+            "required": false,
+            "description": "Record type.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "podcast",
+                "journalist",
+                "newsletter",
+                "person",
+                "guest"
+              ]
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Records per page.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 250,
+              "default": 50
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Records to skip.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Fields respect team and profile access and account disclosure settings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": {
+                      "type": "boolean"
+                    },
+                    "campaign_id": {
+                      "type": "integer"
+                    },
+                    "campaign_name": {
+                      "type": "string"
+                    },
+                    "total_podcasts": {
+                      "type": "integer"
+                    },
+                    "limit": {
+                      "type": "integer"
+                    },
+                    "offset": {
+                      "type": "integer"
+                    },
+                    "has_more": {
+                      "type": "boolean"
+                    },
+                    "podcasts": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "additionalProperties": true
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid filter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or revoked PodPitch API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Integration access is not enabled for this account.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or outside the key profile scope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/pitches": {
+      "get": {
+        "operationId": "listSentPitches",
+        "summary": "List sent pitch events",
+        "description": "Requires enabled PodPitch integration access. Returns events for recipients previously pitched through PodPitch. One page per request.",
+        "tags": [
+          "Pitches and replies"
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "query",
+            "required": false,
+            "description": "Restrict to one campaign.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Records per page.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Records to skip.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000,
+              "default": 0
+            }
+          },
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "description": "Optional upper event timestamp cutoff for pagination. Use an ISO timestamp with a timezone.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Fields respect team and profile access and account disclosure settings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid filter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or revoked PodPitch API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Integration access is not enabled for this account.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or outside the key profile scope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/replies": {
+      "get": {
+        "operationId": "listReplies",
+        "summary": "List replies",
+        "description": "Requires enabled PodPitch integration access. Read reply events and filter by category. One page per request.",
+        "tags": [
+          "Pitches and replies"
+        ],
+        "parameters": [
+          {
+            "name": "event_type",
+            "in": "query",
+            "required": false,
+            "description": "Reply category; reply_received includes supported reply categories.",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "reply_received",
+                "positive_reply",
+                "negative_reply",
+                "meeting_requested",
+                "needs_info",
+                "out_of_office"
+              ]
+            }
+          },
+          {
+            "name": "campaign_id",
+            "in": "query",
+            "required": false,
+            "description": "Restrict to one campaign.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Records per page.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Records to skip.",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 100000,
+              "default": 0
+            }
+          },
+          {
+            "name": "as_of",
+            "in": "query",
+            "required": false,
+            "description": "Optional upper event timestamp cutoff for pagination. Use an ISO timestamp with a timezone.",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Fields respect team and profile access and account disclosure settings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "additionalProperties": true
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid filter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or revoked PodPitch API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Integration access is not enabled for this account.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or outside the key profile scope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/campaigns/{campaign_id}/records/{entity_id}": {
+      "get": {
+        "operationId": "getOutreachRecord",
+        "summary": "Get one outreach record",
+        "description": "Requires enabled PodPitch integration access. The entity ID can contain slashes; URL-encode the full ID.",
+        "tags": [
+          "Outreach records"
+        ],
+        "parameters": [
+          {
+            "name": "campaign_id",
+            "in": "path",
+            "required": true,
+            "description": "Campaign ID from List campaigns.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1
+            }
+          },
+          {
+            "name": "entity_id",
+            "in": "path",
+            "required": true,
+            "description": "The existing record entity ID. URL-encode it as a path value.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Fields respect team and profile access and account disclosure settings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid filter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or revoked PodPitch API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Integration access is not enabled for this account.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or outside the key profile scope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/replies/{message_id}": {
+      "get": {
+        "operationId": "getReply",
+        "summary": "Get one reply",
+        "description": "Requires enabled PodPitch integration access. Use message_id from a reply event.",
+        "tags": [
+          "Pitches and replies"
+        ],
+        "parameters": [
+          {
+            "name": "message_id",
+            "in": "path",
+            "required": true,
+            "description": "The message_id returned by List replies. URL-encode it as a path value.",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful response. Fields respect team and profile access and account disclosure settings.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": true
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid filter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Missing, invalid, or revoked PodPitch API key.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "Integration access is not enabled for this account.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not found or outside the key profile scope.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Invalid request parameter.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          },
+          "429": {
+            "description": "Rate limit reached.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "detail": {}
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

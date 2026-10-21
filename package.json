@@ -1,0 +1,52 @@
+{
+  "name": "podpitch",
+  "version": "1.0.0",
+  "description": "The official PodPitch CLI for PR campaign reporting, media outreach records, sent pitches, and replies.",
+  "type": "module",
+  "bin": {
+    "podpitch": "bin/podpitch.js"
+  },
+  "files": [
+    "bin/",
+    "src/",
+    "openapi.json",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test": "node --test",
+    "check": "node --check bin/podpitch.js && node --check src/cli.js && node --check src/client.js",
+    "prepublishOnly": "npm run check && npm test"
+  },
+  "keywords": [
+    "podpitch",
+    "cli",
+    "api",
+    "podcast",
+    "podcasts",
+    "public-relations",
+    "pr",
+    "media-outreach",
+    "journalists",
+    "newsletters",
+    "campaigns",
+    "reporting"
+  ],
+  "homepage": "https://www.podpitch.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PodPitch/podpitch-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/PodPitch/podpitch-cli/issues"
+  },
+  "author": "PodPitch (https://www.podpitch.com)",
+  "license": "MIT",
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}
